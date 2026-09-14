@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  wibe-slicer:
+    build: .
+    container_name: wibe-slicer
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
