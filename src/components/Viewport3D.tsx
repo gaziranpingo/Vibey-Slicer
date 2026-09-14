@@ -481,7 +481,12 @@ export const Viewport3D = forwardRef<Viewport3DRef, Viewport3DProps>(({
             mesh.visible = false;
           }
         } else {
-          mesh.visible = false;
+          // If not in preview, treat as prepare (visible)
+          mesh.visible = true;
+          mat.transparent = false;
+          mat.opacity = 1.0;
+          mat.depthWrite = true;
+          mat.color.copy(color);
         }
       }
 

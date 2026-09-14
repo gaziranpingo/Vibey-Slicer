@@ -1,12 +1,11 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { fileURLToPath } from 'url';
 import * as THREE from 'three';
 import fs from 'fs';
+import os from 'os';
 import { sliceModel } from "./src/utils/slicerEngine.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
 
 async function startServer() {
@@ -211,8 +210,30 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", async () => {
+    console.log("[INFO] Keeping terminal open. All background logs and activity will appear below:");
+    console.log("=============================================");
+    console.log(`[INFO] Open your browser at:`);
+    console.log(` - Local: http://localhost:${PORT}`);
+
+    // Local IPs
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+      for (const iface of interfaces[name]!) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          console.log(` - LAN:   http://${iface.address}:${PORT}`);
+        }
+      }
+    }
+
+    // Public IP
+    try {
+      const response = await fetch('https://api.ipify.org');
+      const publicIp = await response.text();
+      console.log(` - WAN:   http://${publicIp}:${PORT}`);
+    } catch (e) {
+      // Ignore if public IP lookup fails
+    }
   });
 }
 
